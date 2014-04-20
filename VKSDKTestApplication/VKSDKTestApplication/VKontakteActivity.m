@@ -180,7 +180,7 @@ static NSString * kAppID= @"3974615";
 - (void)vkSdkUserDeniedAccess:(VKError *)authorizationError {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:@"Access denied"
-                                                       delegate:self
+                                                       delegate:nil
                                               cancelButtonTitle:@"Close"
                                               otherButtonTitles:nil];
     [alertView show];
