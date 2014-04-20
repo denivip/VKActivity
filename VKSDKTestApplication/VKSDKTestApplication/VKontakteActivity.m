@@ -54,6 +54,11 @@ static NSString * kAppID= @"3974615";
     return [UIImage imageNamed:@"vk_activity"];
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
++ (UIActivityCategory)activityCategory {
+    return UIActivityCategoryShare;
+}
+#endif
 
 - (BOOL)canPerformWithActivityItems:(NSArray *)activityItems {
     for (UIActivityItemProvider *item in activityItems) {
