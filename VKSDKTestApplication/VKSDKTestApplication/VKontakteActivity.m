@@ -27,6 +27,11 @@ static NSString * kAppID= @"3974615";
 
 #pragma mark - NSObject
 
+- (id)init {
+    NSAssert(false, @"You cannot init this class directly. Instead, use initWithParent");
+    return nil;
+}
+
 - (id)initWithParent:(UIViewController*)parent {
     if ((self = [super init])) {
         self.parent = parent;
