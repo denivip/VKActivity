@@ -1,7 +1,7 @@
 //
 //  VKCaptchaViewController.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -23,11 +23,7 @@
 #import <UIKit/UIKit.h>
 #import "VKError.h"
 /**
- Controller fo displaying captcha. Example use:
- @code
- VKCaptchaViewController * vc = [VKCaptchaViewController captchaControllerWithError:captchaError];
- [vc presentIn:someController];
- @endcode
+ Controller fo displaying captcha.
  */
 @interface VKCaptchaViewController : UIViewController
 {

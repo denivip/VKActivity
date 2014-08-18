@@ -1,7 +1,7 @@
 //
-//  VKUsersArray.h
+//  VKUser.m
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -20,9 +20,24 @@
 //  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "VKApiObjectArray.h"
-/**
- Array of API users
- */
-@interface VKUsersArray : VKApiObjectArray
+#import "VKUser.h"
+
+@implementation VKLastSeen
+@end
+@implementation VKUser
+@end
+@implementation VKGeoObject
+@end
+@implementation VKCity
+@end
+@implementation VKCountry
+@end
+@implementation VKExports
+@end
+
+@implementation VKUsersArray
+-(instancetype)initWithDictionary:(NSDictionary *)dict
+{
+    return [super initWithDictionary:dict objectClass:[VKUser class]];
+}
 @end

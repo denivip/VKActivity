@@ -1,7 +1,7 @@
 //
 //  VKOperation.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -34,5 +34,7 @@ typedef enum {
 /// This operation state. Value from VKOperationState enum
 @property (readwrite, nonatomic, assign) VKOperationState state;
 /// Operation working lock
-@property (readonly, nonatomic, strong) NSRecursiveLock *lock;
+@property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
+/// Sets dispatch queue for returning result
+@property (nonatomic, assign) dispatch_queue_t responseQueue;
 @end

@@ -4,7 +4,7 @@
 //  Based on AFNetworking library.
 //  https://github.com/AFNetworking/AFNetworking
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -27,6 +27,7 @@
 #import "VKHTTPOperation.h"
 #import "VKSdkVersion.h"
 #import "VKImageParameters.h"
+#import "VKUploadImage.h"
 
 static VKHTTPClient *__clientInstance = nil;
 static NSString const *VK_API_URI = @"api.vk.com/method/";

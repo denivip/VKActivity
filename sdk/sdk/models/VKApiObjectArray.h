@@ -1,7 +1,7 @@
 //
 //  VKApiObjectArray.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -11,7 +11,7 @@
 //  subject to the following conditions:
 //
 //  The above copyright notice and this permission notice shall be included in all
-//  copies or substantial portions of the Software.
+//  copies or suabstantial portions of the Software.
 //
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
@@ -27,7 +27,7 @@
  */
 @interface VKApiObjectArray : VKApiObject <NSFastEnumeration>
 /// Count of items in array
-@property (nonatomic, readonly) int count;
+@property (nonatomic, readonly) NSUInteger count;
 /// Parsed array items
 @property (nonatomic, strong) NSMutableArray * items;
 
@@ -48,12 +48,12 @@
 /**
  Initialize object with any array. items property is sets as passed array, count is a count of items in passed array
  @param array API json array
- @param objectClass class of items inside of array
  @return Initialized object
  */
 - (instancetype) initWithArray:(NSArray*) array;
 
 /// Array funtions
+
 - (id) objectAtIndex:(NSInteger) idx;
 - (id) objectAtIndexedSubscript:(NSUInteger)idx NS_AVAILABLE(10_8, 6_0);
 - (NSEnumerator *)objectEnumerator;
@@ -66,4 +66,5 @@
 - (id) lastObject;
 
 -(void)serializeTo:(NSMutableDictionary*) dict withName:(NSString*) name;
+-(Class)objectClass;
 @end

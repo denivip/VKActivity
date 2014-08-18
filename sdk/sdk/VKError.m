@@ -1,7 +1,7 @@
 //
 //  VKError.m
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -38,6 +38,9 @@
 		internalError.captchaImg = JSON[VK_API_CAPTCHA_IMG];
 		internalError.captchaSid = JSON[VK_API_CAPTCHA_SID];
 	}
+    if (internalError.errorCode == 17) {
+        internalError.redirectUri = JSON[VK_API_REDIRECT_URI];
+    }
     
 	VKError *mainError = [VKError errorWithCode:VK_API_ERROR];
 	mainError.apiError = internalError;
@@ -58,20 +61,20 @@
 }
 
 - (NSString *)description {
-//	if (self.httpError) {
-//		return [NSString stringWithFormat:@"<VKError: %p; HTTP error {%@}>", self, self.httpError];
-//	}
-//	else {
-//		if (self.errorCode == VK_API_ERROR)
-//			return [NSString stringWithFormat:@"<VKError: %p; Internal API error {%@}>",
-//			        self, self.apiError];
-//		else if (self.errorCode == VK_API_CANCELED)
-//			return [NSString stringWithFormat:@"<VKError: %p; SDK error (request canceled)>", self];
-//		else if (self.errorCode == VK_API_REQUEST_NOT_PREPARED)
-//			return [NSString stringWithFormat:@"<VKError: %p; SDK error (request not prepared)>", self];
-//		return [NSString stringWithFormat:@"<VKError: %p; API error {code: %d; message: %@; params: %@; captcha_sid: %@; captcha_img: %@}>", self, self.errorCode, self.errorMessage, self.requestParams, self.captchaSid, self.captchaImg];
-//	}
-    return [NSString stringWithFormat:@"<VKError: %p;>", self];
+	if (self.httpError) {
+		return [NSString stringWithFormat:@"<VKError: %p; HTTP error {%@}>", self, self.httpError];
+	}
+	else {
+		if (self.errorCode == VK_API_ERROR)
+			return [NSString stringWithFormat:@"<VKError: %p; Internal API error {%@}>",
+			        self, self.apiError];
+		else if (self.errorCode == VK_API_CANCELED)
+			return [NSString stringWithFormat:@"<VKError: %p; SDK error (request canceled)>", self];
+		else if (self.errorCode == VK_API_REQUEST_NOT_PREPARED)
+			return [NSString stringWithFormat:@"<VKError: %p; SDK error (request not prepared)>", self];
+		return [NSString stringWithFormat:@"<VKError: %p; API error {code: %ld; message: %@;}>", self, (long)self.errorCode, self.errorMessage];
+	}
+//    return [NSString stringWithFormat:@"<VKError: %p;>", self];
 }
 
 @end

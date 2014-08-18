@@ -1,7 +1,7 @@
 //
 //  VKRequest.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -28,6 +28,22 @@
 #import "VKHTTPOperation.h"
 
 /**
+ Creates and debug timings for VKRequest
+ */
+@interface VKRequestTiming : VKObject
+/// Date of request start
+@property (nonatomic, strong) NSDate * startTime;
+/// Date of request finished (after all operations)
+@property (nonatomic, strong) NSDate * finishTime;
+/// Interval of networking load time
+@property (nonatomic, assign) NSTimeInterval loadTime;
+/// Interval of model parsing time
+@property (nonatomic, assign) NSTimeInterval parseTime;
+/// Total time, as difference (finishTime - startTime)
+@property (nonatomic, readonly) NSTimeInterval totalTime;
+@end
+
+/**
  Class for execution API-requests
  */
 @interface VKRequest : VKObject
@@ -35,25 +51,6 @@
 @protected
     /// Working operation for this request
 	NSOperation *_executionOperation;
-@private
-	/// Selected method name
-	NSString *_methodName;
-	/// HTTP method for loading
-	NSString *_httpMethod;
-	/// Passed parameters for method
-	NSDictionary *_methodParameters;
-	/// Method parametes with common parameters
-	OrderedDictionary *_preparedParameters;
-	/// How much times request was loaded
-	int _attemptsUsed;
-	/// Url for uploading files
-	NSString *_uploadUrl;
-	/// Requests that should be called after current request.
-	NSMutableArray *_postRequestsQueue;
-	/// Class for model parsing
-	Class _modelClass;
-	/// Paths to photos
-	NSArray *_photoObjects;
 }
 /// Specify language for API request
 @property (nonatomic, strong) NSString *preferredLang;
@@ -70,8 +67,16 @@
 @property (nonatomic, assign) BOOL secure;
 /// Sets current system language as default for API data
 @property (nonatomic, assign) BOOL useSystemLanguage;
-/// Set to false if you don't need automatic model parsing
+/// Set to NO if you don't need automatic model parsing
 @property (nonatomic, assign) BOOL parseModel;
+/// Set to YES if you need info about request timing
+@property (nonatomic, assign) BOOL debugTiming;
+/// Timeout for this request
+@property (nonatomic, assign) NSInteger requestTimeout;
+/// Sets dispatch queue for returning result
+@property (nonatomic, assign) dispatch_queue_t responseQueue;
+/// Set to YES if you need to freeze current thread for response
+@property (nonatomic, assign) BOOL waitUntilDone;
 /// Returns method for current request, e.g. users.get
 @property (nonatomic, readonly) NSString *methodName;
 /// Returns HTTP-method for current request
@@ -80,6 +85,11 @@
 @property (nonatomic, readonly) NSDictionary *methodParameters;
 /// Returns http operation that can be enqueued
 @property (nonatomic, readonly) NSOperation *executionOperation;
+/// Returns info about request timings
+@property (nonatomic, readonly) VKRequestTiming *requestTiming;
+/// Return YES if current request was started
+@property (nonatomic, readonly) BOOL isExecuting;
+
 
 ///-------------------------------
 /// @name Preparing requests

@@ -1,7 +1,7 @@
 //
 //  VKImageParameters.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -66,20 +66,4 @@ typedef enum VKImageType {
 - (NSString *)mimeType;
 @end
 
-/**
- Contains image data with image description
- */
-@interface VKUploadImage : VKObject
 
-/// Bytes of image
-@property (nonatomic, strong) NSData *imageData;
-/// Image basic info
-@property (nonatomic, strong) VKImageParameters *parameters;
-/**
- Create new image data representation used for upload
- @param data Bytes of image
- @param params Image basic info
- @return Prepared object for using in upload
- */
-+ (instancetype)objectWithData:(NSData *)data andParams:(VKImageParameters *)params;
-@end

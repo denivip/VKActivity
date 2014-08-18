@@ -1,7 +1,7 @@
 //
 //  VKApiPhotos.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -31,14 +31,14 @@
  @param albumId album identifier (positive integer)
  @return Request for load
  */
-- (VKRequest *)getUploadServer:(int)albumId;
+- (VKRequest *)getUploadServer:(NSInteger)albumId;
 /**
  https://vk.com/dev/photos.getUploadServer
  @param albumId album identifier (positive integer)
  @param groupId group identifier (positive integer)
  @return Request for load
  */
-- (VKRequest *)getUploadServer:(int)albumId andGroupId:(int)groupId;
+- (VKRequest *)getUploadServer:(NSInteger)albumId andGroupId:(NSInteger)groupId;
 /**
  https://vk.com/dev/photos.getWallUploadServer
  @return Request for load
@@ -50,7 +50,7 @@
  @param groupId group identifier (positive integer)
  @return Request for load
  */
-- (VKRequest *)getWallUploadServer:(int)groupId;
+- (VKRequest *)getWallUploadServer:(NSInteger)groupId;
 
 
 /**

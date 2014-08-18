@@ -9,8 +9,9 @@
 #import "VKontakteActivity.h"
 #import <VKSdk/VKSdk.h>
 #import "MBProgressHUD.h"
+#import "REComposeViewController.h"
 
-@interface VKontakteActivity () <VKSdkDelegate>
+@interface VKontakteActivity () <VKSdkDelegate, REComposeViewControllerDelegate>
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *string;
@@ -42,15 +43,18 @@ static NSString * kAppID= @"3974615";
 
 #pragma mark - UIActivity
 
-- (NSString *)activityType {
+- (NSString *)activityType
+{
     return @"VKActivityTypeVKontakte";
 }
 
-- (NSString *)activityTitle {
-    return @"VKontakte";
+- (NSString *)activityTitle
+{
+    return @"VK";
 }
 
-- (UIImage *)activityImage {
+- (UIImage *)activityImage
+{
     return [UIImage imageNamed:@"vk_activity"];
 }
 
@@ -89,100 +93,104 @@ static NSString * kAppID= @"3974615";
     }
 }
 
-- (void)performActivity{
+- (void)performActivity
+{
     [VKSdk initializeWithDelegate:self andAppId:kAppID];
-    if ([VKSdk wakeUpSession])
-    {
-        [self postToWall];
-    }
-    else{
-        [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS]];
-    }
+    [self.parent dismissViewControllerAnimated:YES completion:^(void)
+     {
+         if ([VKSdk wakeUpSession])
+         {
+             [self startComposeViewController];
+             
+         }
+         else
+         {
+             [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
+         }
+         
+     }];
 }
 
 #pragma mark - Upload
 
--(void)postToWall{
-    [self begin];
-    if (self.image) {
+-(void)postToWall
+{
+    if (self.image)
+    {
         [self uploadPhoto];
     }
-    else{
+    else
+    {
         [self uploadText];
     }
 }
 
-- (void)uploadPhoto {
+- (void)uploadPhoto
+{
     NSString *userId = [VKSdk getAccessToken].userId;
     VKRequest *request = [VKApi uploadWallPhotoRequest:self.image parameters:[VKImageParameters jpegImageWithQuality:1.f] userId:[userId integerValue] groupId:0];
 	[request executeWithResultBlock: ^(VKResponse *response) {
 	    VKPhoto *photoInfo = [(VKPhotoArray*)response.parsedModel objectAtIndex:0];
 	    NSString *photoAttachment = [NSString stringWithFormat:@"photo%@_%@", photoInfo.owner_id, photoInfo.id];
         [self postToWall:@{ VK_API_ATTACHMENTS : photoAttachment,
-                                VK_API_FRIENDS_ONLY : @(0),
-                                VK_API_OWNER_ID : userId,
-                                VK_API_MESSAGE : [NSString stringWithFormat:@"%@ %@",self.string, [self.URL absoluteString]]}];
+                            VK_API_FRIENDS_ONLY : @(0),
+                            VK_API_OWNER_ID : userId,
+                            VK_API_MESSAGE : [NSString stringWithFormat:@"%@ %@",self.string, [self.URL absoluteString]]}];
     } errorBlock: ^(NSError *error) {
 	    NSLog(@"Error: %@", error);
-        [self end];
+        [self activityDidFinish:NO];
 	}];
 }
 
 -(void)uploadText{
     [self postToWall:@{ VK_API_FRIENDS_ONLY : @(0),
-                            VK_API_OWNER_ID : [VKSdk getAccessToken].userId,
-                            VK_API_MESSAGE : self.string}];
+                        VK_API_OWNER_ID : [VKSdk getAccessToken].userId,
+                        VK_API_MESSAGE : [NSString stringWithFormat:@"%@\n%@",self.string, [self.URL absoluteString]]}];
 }
 
--(void)postToWall:(NSDictionary *)params{
+-(void)postToWall:(NSDictionary *)params
+{
     VKRequest *post = [[VKApi wall] post:params];
-    [post executeWithResultBlock: ^(VKResponse *response) {
-        NSNumber * postId = response.json[@"post_id"];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://vk.com/wall%@_%@", [VKSdk getAccessToken].userId, postId]]];
-        [self end];
-    } errorBlock: ^(NSError *error) {
-        NSLog(@"Error: %@", error);
-        [self end];
-    }];
-}
-
--(void)begin{
-    UIView *view = self.parent.view.window;
-    self.HUD = [[MBProgressHUD alloc] initWithView:view];
-	[view addSubview:self.HUD];
-    self.HUD.mode = MBProgressHUDModeIndeterminate;
-    self.HUD.labelText = @"Загрузка...";
-	[self.HUD show:YES];
-}
-
--(void)end{
-    [self.HUD hide:YES];
-    [self activityDidFinish:YES];
+    [post executeWithResultBlock: ^(VKResponse *response)
+     {
+         [self activityDidFinish:YES];
+     }
+                      errorBlock: ^(NSError *error)
+     {
+         NSLog(@"Error: %@", error);
+         [self activityDidFinish:NO];
+     }];
 }
 
 #pragma mark - vkSdk
 
-- (void)vkSdkNeedCaptchaEnter:(VKError *)captchaError {
+- (void)vkSdkNeedCaptchaEnter:(VKError *)captchaError
+{
 	VKCaptchaViewController *vc = [VKCaptchaViewController captchaControllerWithError:captchaError];
 	[vc presentIn:self.parent];
 }
 
-- (void)vkSdkTokenHasExpired:(VKAccessToken *)expiredToken {
-    [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS]];
+- (void)vkSdkTokenHasExpired:(VKAccessToken *)expiredToken
+{
+    [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
 }
 
-- (void)vkSdkDidReceiveNewToken:(VKAccessToken *)newToken {
-    [self postToWall];
+-(void)vkSdkReceivedNewToken:(VKAccessToken *)newToken
+{
+    [self startComposeViewController];
 }
 
-- (void)vkSdkShouldPresentViewController:(UIViewController *)controller {
+- (void)vkSdkShouldPresentViewController:(UIViewController *)controller
+{
 	[self.parent presentViewController:controller animated:YES completion:nil];
 }
 
-- (void)vkSdkDidAcceptUserToken:(VKAccessToken *)token {
-    [self postToWall];
+- (void)vkSdkDidAcceptUserToken:(VKAccessToken *)token
+{
+    [self startComposeViewController];
 }
-- (void)vkSdkUserDeniedAccess:(VKError *)authorizationError {
+- (void)vkSdkUserDeniedAccess:(VKError *)authorizationError
+{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:@"Access denied"
                                                        delegate:nil
@@ -190,7 +198,34 @@ static NSString * kAppID= @"3974615";
                                               otherButtonTitles:nil];
     [alertView show];
     
-	[self end];
+    [self activityDidFinish:NO];
+}
+
+-(void) startComposeViewController
+{
+    REComposeViewController *composeViewController = [[REComposeViewController alloc] init];
+    composeViewController.title = @"VK";
+    composeViewController.hasAttachment = YES;
+    composeViewController.attachmentImage = self.image;
+    composeViewController.text = self.string;
+    [composeViewController setDelegate:self];
+    [composeViewController presentFromRootViewController];
+}
+
+- (void)composeViewController:(REComposeViewController *)composeViewController didFinishWithResult:(REComposeResult)result
+{
+    [composeViewController dismissViewControllerAnimated:YES completion:nil];
+    
+    if (result == REComposeResultCancelled)
+    {
+        [self activityDidFinish:NO];
+    }
+    
+    if (result == REComposeResultPosted)
+    {
+        self.string = composeViewController.text;
+        [self postToWall];
+    }
 }
 
 @end
