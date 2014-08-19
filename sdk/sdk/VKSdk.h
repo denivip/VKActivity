@@ -38,8 +38,6 @@
 #import "VKBatchRequest.h"
 #import "NSError+VKError.h"
 #import "VKApiModels.h"
-#import "VKUploadImage.h"
-#import "VKShareDialogController.h"
 /**
  Global SDK events delegate protocol.
  You should implement it, typically as main view controller or as application delegate.
