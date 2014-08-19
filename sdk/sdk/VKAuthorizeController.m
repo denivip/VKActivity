@@ -1,7 +1,7 @@
 //
 //  VKAuthorizeController.m
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -27,8 +27,38 @@
 @implementation UINavigationController (LastControllerBar)
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-	return [[self.viewControllers lastObject] preferredStatusBarStyle];
+    if (self.viewControllers.count)
+        return [[self.viewControllers lastObject] preferredStatusBarStyle];
+    return UIStatusBarStyleDefault;
 }
+-(NSUInteger)supportedInterfaceOrientations
+{
+    if (self.viewControllers.count)
+        return [[self.viewControllers lastObject] supportedInterfaceOrientations];
+    return UIInterfaceOrientationMaskAll;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    if (self.viewControllers.count)
+        return [[self.viewControllers lastObject] preferredInterfaceOrientationForPresentation];
+    return UIInterfaceOrientationPortrait;
+}
+
+@end
+
+@interface VKAuthorizeController ()
+@property (nonatomic, strong) UIWebView       *webView;
+@property (nonatomic, strong) NSString        *appId;
+@property (nonatomic, strong) NSString        *scope;
+@property (nonatomic, strong) NSString        *redirectUri;
+@property (nonatomic, strong) UIActivityIndicatorView * activityMark;
+@property (nonatomic, strong) UILabel         *warningLabel;
+@property (nonatomic, strong) UILabel         *statusBar;
+@property (nonatomic, strong) VKError         *validationError;
+@property (nonatomic, strong) NSURLRequest    *lastRequest;
+@property (nonatomic, weak)   UINavigationController *navigationController;
+@property (nonatomic, assign) BOOL             finished;
 
 @end
 
@@ -46,7 +76,7 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 
 + (void)presentForValidation:(VKError *)validationError {
 	VKAuthorizeController *controller  = [[VKAuthorizeController alloc] init];
-	controller->_validationError = validationError;
+	controller.validationError = validationError;
 	[self presentThisController:controller];
 }
 
@@ -63,7 +93,7 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 	controller.navigationItem.titleView = [[UIImageView alloc] initWithImage:image];
 	[VKSdk.instance.delegate vkSdkShouldPresentViewController:navigation];
     
-	controller->_nc = navigation;
+	controller.navigationController = navigation;
 }
 
 + (NSString *)buildAuthorizationUrl:(NSString *)redirectUri
@@ -71,7 +101,7 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
                               scope:(NSString *)scope
                              revoke:(BOOL)revoke
                             display:(NSString *)display {
-	return [NSString stringWithFormat:@"https://oauth.vk.com/authorize?client_id=%@&scope=%@&redirect_uri=%@&display=%@&v=%@&response_type=token&revoke=%d", clientId, scope, redirectUri, display, VK_SDK_API_VERSION, revoke ? 1:0];
+	return [NSString stringWithFormat:@"https://oauth.vk.com/authorize?client_id=%@&scope=%@&redirect_uri=%@&display=%@&v=%@&response_type=token&revoke=%d&sdk_version=%@", clientId, scope, redirectUri, display, VK_SDK_API_VERSION, revoke ? 1:0, VK_SDK_VERSION];
 }
 
 #pragma mark View prepare
@@ -84,19 +114,16 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 	UIView *view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
 	view.backgroundColor = [UIColor colorWithRed:240.0f / 255 green:242.0f / 255 blue:245.0f / 255 alpha:1.0f];
 	self.view = view;
-	UIActivityIndicatorView *activityMark = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-	activityMark.center = view.center;
-	activityMark.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-	[activityMark startAnimating];
-	[view addSubview:activityMark];
+	_activityMark = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+	[_activityMark startAnimating];
+	[view addSubview:_activityMark];
     
-	_warningLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, activityMark.frame.origin.y + activityMark.frame.size.height * 1.2, 300, 50)];
+	_warningLabel = [[UILabel alloc] init];
 	_warningLabel.numberOfLines = 3;
 	_warningLabel.hidden = YES;
 	_warningLabel.textColor = VK_COLOR;
 	_warningLabel.textAlignment = NSTextAlignmentCenter;
 	_warningLabel.font = [UIFont boldSystemFontOfSize:15];
-	_warningLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
 	[view addSubview:_warningLabel];
     
 	_webView = [[UIWebView alloc] initWithFrame:view.bounds];
@@ -106,7 +133,21 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 	_webView.scrollView.bounces = NO;
 	_webView.scrollView.clipsToBounds = NO;
 	[view addSubview:_webView];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelAuthorization:)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[VKBundle localizedString:@"Cancel"] style:UIBarButtonItemStyleBordered target:self action:@selector(cancelAuthorization:)];
+
+    [self setElementsPositions:self.interfaceOrientation duration:0];
+}
+-(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self setElementsPositions:toInterfaceOrientation duration:duration];
+}
+-(void) setElementsPositions:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    CGRect appFrame = [[UIScreen mainScreen] bounds];
+    CGFloat width = UIInterfaceOrientationIsPortrait(toInterfaceOrientation) ? appFrame.size.width : appFrame.size.height;
+    CGFloat height = UIInterfaceOrientationIsPortrait(toInterfaceOrientation) ? appFrame.size.height : appFrame.size.width;
+    [UIView animateWithDuration:duration animations:^{
+        _activityMark.center = CGPointMake(width / 2, height / 2 - 64);
+        _warningLabel.frame  = CGRectMake(10, _activityMark.frame.origin.y + _activityMark.frame.size.height * 1.2, width - 20, 50);
+    }];
 }
 
 - (instancetype)initWith:(NSString *)appId andPermissions:(NSArray *)permissions revokeAccess:(BOOL)revoke displayType:(VKDisplayType) display {
@@ -135,7 +176,6 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 #pragma mark Web view work
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	NSLog(@"%@", request);
 	_lastRequest = request;
 	NSString *urlString = [[request URL] absoluteString];
 	_statusBar.text = urlString;
@@ -143,7 +183,7 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 		[self setRightBarButtonActivity];
 	}
 	if ([urlString hasPrefix:REDIRECT_URL]) {
-		if ([VKSdk processOpenURL:[request URL] fromApplication:@"com.vk.client"] && _validationError)
+		if ([VKSdk processOpenURL:[request URL] fromApplication:VK_ORIGINAL_CLIENT_BUNDLE] && _validationError)
 			[_validationError.request repeat];
         
 		[self dismiss];
@@ -184,17 +224,19 @@ static NSString *const REDIRECT_URL = @"https://oauth.vk.com/blank.html";
 #pragma mark Cancelation and dismiss
 
 - (void)cancelAuthorization:(id)sender {
-	VKError *error = [VKError errorWithCode:VK_API_CANCELED];
-	[VKSdk setAccessTokenError:error];
+    if (!_validationError) {
+        VKError *error = [VKError errorWithCode:VK_API_CANCELED];
+        [VKSdk setAccessTokenError:error];
+    }
 	[self dismiss];
 }
 
 - (void)dismiss {
 	_finished = YES;
-	if (_nc.isBeingDismissed)
+	if (_navigationController.isBeingDismissed)
 		return;
-	if (!_nc.isBeingPresented) {
-		[_nc.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+	if (!_navigationController.isBeingPresented) {
+		[_navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 	else {
 		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(300 * NSEC_PER_MSEC)), dispatch_get_main_queue(), ^(void) {

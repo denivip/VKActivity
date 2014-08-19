@@ -1,7 +1,7 @@
 //
 //  VKUploadPhotoRequest.m
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -23,10 +23,8 @@
 #import "VKUploadPhotoRequest.h"
 #import "VKApi.h"
 @implementation VKUploadPhotoRequest
-- (instancetype)initWithImage:(UIImage *)image parameters:(VKImageParameters *)parameters albumId:(int)albumId groupId:(int)groupId {
-	self = [super init];
-	self.image            = image;
-	self.imageParameters  = parameters;
+- (instancetype)initWithImage:(UIImage *)image parameters:(VKImageParameters *)parameters albumId:(NSInteger)albumId groupId:(NSInteger)groupId {
+	self = [super initWithImage:image parameters:parameters];
 	self.albumId          = albumId;
 	self.groupId          = groupId;
 	return self;

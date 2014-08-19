@@ -1,7 +1,7 @@
 //
 //  VKBundle.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -21,7 +21,8 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "VKObject.h"
-
+#define VKLocalizedString(s) [VKBundle localizedString:s]
+#define VKImageNamed(s)      [VKBundle vkLibraryImageNamed:s]
 /**
  Class for providing resources from VK SDK Bundle
  */
@@ -37,4 +38,9 @@
  @return Founded image object or nil, if file not found
  */
 + (UIImage *)vkLibraryImageNamed:(NSString *)name;
+
+/**
+ * Returns localized string from VK bundle
+ */
++ (NSString*)localizedString:(NSString*)string;
 @end

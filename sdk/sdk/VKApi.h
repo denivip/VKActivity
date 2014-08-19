@@ -1,7 +1,7 @@
 //
 //  VKApi.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -28,9 +28,9 @@
 #import "VKApiWall.h"
 #import "VKApiConst.h"
 #import "VKApiCaptcha.h"
+#import "VKApiGroups.h"
 #import "VKImageParameters.h"
-#import "VKUser.h"
-
+#import "VKApiModels.h"
 /**
  Provides access for API parts.
  */
@@ -56,6 +56,11 @@
  */
 + (VKApiFriends *)friends;
 /**
+ https://vk.com/dev/friends
+ Returns object for preparing requests to groups part of API
+ */
++ (VKApiGroups *)groups;
+/**
  Create new request with parameters. See documentation for methods here https://vk.com/dev/methods
  @param method API-method name, e.g. audio.get
  @param parameters method parameters
@@ -75,8 +80,8 @@
  */
 + (VKRequest *)uploadWallPhotoRequest:(UIImage *)image
                            parameters:(VKImageParameters *)parameters
-                               userId:(long long)userId
-                              groupId:(int)groupId;
+                               userId:(NSInteger)userId
+                              groupId:(NSInteger)groupId;
 
 /**
  Uploads photo in user or group album
@@ -87,10 +92,18 @@
  */
 + (VKRequest *)uploadAlbumPhotoRequest:(UIImage *)image
                             parameters:(VKImageParameters *)parameters
-                               albumId:(int)albumId
-                               groupId:(int)groupId;
+                               albumId:(NSInteger)albumId
+                               groupId:(NSInteger)groupId;
 
-
+/**
+ Uploads photo for messaging
+ @param image image used for saving to post
+ @param parameters parameters for image to be uploaded
+ @param albumId target album ID. Required
+ @param groupId target group ID (positive). May be nil
+ */
++ (VKRequest *)uploadMessagePhotoRequest:(UIImage *)image
+                              parameters:(VKImageParameters *)parameters;
 
 
 @end

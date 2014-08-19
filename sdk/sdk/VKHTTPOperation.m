@@ -4,7 +4,7 @@
 //  Based on AFNetworking library.
 //  https://github.com/AFNetworking/AFNetworking
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -31,9 +31,10 @@ NSString *const VKNetworkingOperationFailingURLRequestErrorKey = @"VKNetworkingO
 NSString *const VKNetworkingOperationFailingURLResponseErrorKey = @"VKNetworkingOperationFailingURLResponseErrorKey";
 
 
+
 typedef void (^VKURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
 @interface VKHTTPOperation ()
-@property (readwrite, nonatomic, assign, getter = isCancelled) BOOL cancelled;
+@property (readwrite, nonatomic, assign, getter = isCancelled) BOOL wasCanceled;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLConnection *connection;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
@@ -69,7 +70,7 @@ static void VKGetMediaTypeAndSubtypeWithString(NSString *string, NSString **type
 + (instancetype)operationWithRequest:(VKRequest *)request {
 	NSURLRequest *urlRequest = [request getPreparedRequest];
     
-	if (!request)
+	if (!urlRequest)
 		return nil;
 	VKHTTPOperation *operation = [[VKHTTPOperation alloc] initWithURLRequest:urlRequest];
 	operation.vkRequest = request;
@@ -315,6 +316,7 @@ static void VKGetMediaTypeAndSubtypeWithString(NSString *string, NSString **type
 
 - (void)operationDidStart {
 	[self.lock lock];
+    [[NSNotificationCenter defaultCenter] postNotificationName:VKNetworkingOperationDidStart object:self];
 	if (![self isCancelled]) {
 		self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
         
@@ -451,7 +453,7 @@ static void VKGetMediaTypeAndSubtypeWithString(NSString *string, NSString **type
 	}
     
 	self.state = (VKOperationState)[aDecoder decodeIntegerForKey : @"state"];
-	self.cancelled = [aDecoder decodeBoolForKey:@"isCancelled"];
+	self.wasCanceled = [aDecoder decodeBoolForKey:@"isCancelled"];
 	self.response = [aDecoder decodeObjectForKey:@"response"];
 	self.error = [aDecoder decodeObjectForKey:@"error"];
 	self.responseData = [aDecoder decodeObjectForKey:@"responseData"];

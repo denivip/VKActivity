@@ -1,7 +1,7 @@
 //
 //  VKOperation.m
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -77,8 +77,8 @@ static inline BOOL VKStateTransitionIsValid(VKOperationState fromState, VKOperat
 }
 
 @interface VKOperation ()
-@property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
-@property (readwrite, nonatomic, assign, getter = isCancelled) BOOL cancelled;
+
+@property (readwrite, nonatomic, assign, getter = isCancelled) BOOL wasCancelled;
 @end
 @implementation VKOperation
 - (id)init {
@@ -121,7 +121,7 @@ static inline BOOL VKStateTransitionIsValid(VKOperationState fromState, VKOperat
 
 - (void)cancel {
 	[self willChangeValueForKey:@"isCancelled"];
-	_cancelled = YES;
+	_wasCancelled = YES;
 	[super cancel];
 	[self didChangeValueForKey:@"isCancelled"];
 }

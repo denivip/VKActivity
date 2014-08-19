@@ -1,7 +1,7 @@
 //
 //  VKAuthorizeController.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -26,20 +26,7 @@
  Controller for authorization through webview (if VK app not available)
  */
 @interface VKAuthorizeController : UIViewController <UIWebViewDelegate>
-{
-@private
-	UIWebView       *_webView;
-	NSString        *_appId;
-	NSString        *_scope;
-	NSString        *_redirectUri;
-	UILabel         *_warningLabel;
-	UILabel         *_statusBar;
-	VKError         *_validationError;
-	NSURLRequest    *_lastRequest;
-    
-	__weak UINavigationController *_nc;
-	BOOL             _finished;
-}
+
 /**
  Causes UIWebView in standard UINavigationController be presented in SDK delegate
  @param appId Identifier of VK application

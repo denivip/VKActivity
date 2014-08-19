@@ -1,7 +1,7 @@
 //
 //  VKPhotoUploadBase.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -27,16 +27,17 @@
  */
 @interface VKUploadPhotoBase : VKRequest
 /// ID of album to upload
-@property (nonatomic, assign) int albumId;
+@property (nonatomic, assign) NSInteger albumId;
 /// ID of group to upload
-@property (nonatomic, assign) int groupId;
+@property (nonatomic, assign) NSInteger groupId;
 /// ID of user wall to upload
-@property (nonatomic, assign) long long userId;
+@property (nonatomic, assign) NSInteger userId;
 
 /// Passed image parameters
 @property (nonatomic, strong) VKImageParameters *imageParameters;
 /// Image to upload
 @property (nonatomic, strong) UIImage * image;
+- (instancetype)initWithImage:(UIImage *)image parameters:(VKImageParameters *)parameters;
 @end
 
 /**

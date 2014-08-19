@@ -1,7 +1,7 @@
 //
 //  VKError.h
 //
-//  Copyright (c) 2013 VK.com
+//  Copyright (c) 2014 VK.com
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of
 //  this software and associated documentation files (the "Software"), to deal in
@@ -40,7 +40,7 @@ static int const VK_API_REQUEST_NOT_PREPARED = -103;
 @property (nonatomic, strong) VKRequest *request;
 
 /// May contains such errors:\n <b>HTTP status code</b> if HTTP error occured;\n <b>VK_API_ERROR</b> if API error occured;\n <b>VK_API_CANCELED</b> if request was canceled;\n <b>VK_API_REQUEST_NOT_PREPARED</b> if error occured while preparing request;
-@property (nonatomic, assign) int errorCode;
+@property (nonatomic, assign) NSInteger errorCode;
 /// API error message
 @property (nonatomic, strong) NSString *errorMessage;
 /// Reason for authorization fail
