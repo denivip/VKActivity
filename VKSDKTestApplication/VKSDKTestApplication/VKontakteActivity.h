@@ -10,6 +10,8 @@
 
 @interface VKontakteActivity : UIActivity
 
+@property (nonatomic, copy) NSString *appID;
+
 - (id)initWithParent:(UIViewController*)parent;
 
 @end

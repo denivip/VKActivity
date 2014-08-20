@@ -22,7 +22,7 @@
 
 @end
 
-static NSString * kAppID= @"3974615";
+static NSString * kDefaultAppID= @"3974615";
 
 @implementation VKontakteActivity
 
@@ -36,6 +36,7 @@ static NSString * kAppID= @"3974615";
 - (id)initWithParent:(UIViewController*)parent {
     if ((self = [super init])) {
         self.parent = parent;
+        self.appID = kDefaultAppID;
     }
     
     return self;
@@ -82,7 +83,7 @@ static NSString * kAppID= @"3974615";
 - (void)prepareWithActivityItems:(NSArray *)activityItems {
     for (id item in activityItems) {
         if ([item isKindOfClass:[NSString class]]) {
-            self.string = item;
+            self.string = self.string ? [NSString stringWithFormat:@"%@ %@", self.string, item] : item;
         }
         else if([item isKindOfClass:[UIImage class]]) {
             self.image = item;
@@ -95,7 +96,7 @@ static NSString * kAppID= @"3974615";
 
 - (void)performActivity
 {
-    [VKSdk initializeWithDelegate:self andAppId:kAppID];
+    [VKSdk initializeWithDelegate:self andAppId:self.appID];
     [self.parent dismissViewControllerAnimated:YES completion:^(void)
      {
          if ([VKSdk wakeUpSession])
