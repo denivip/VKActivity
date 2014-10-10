@@ -19,6 +19,8 @@
 		1C7C32BB18C0907F002BD584 /* vk_activity@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C7C32B918C0907F002BD584 /* vk_activity@2x.png */; };
 		1C7C32BD18C09332002BD584 /* example.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1C7C32BC18C09332002BD584 /* example.jpg */; };
 		1C7C32C418C0A873002BD584 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C32C318C0A873002BD584 /* MBProgressHUD.m */; };
+		1CE5B32C19E816B500DFB490 /* vk_activity_ios8.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CE5B32A19E816B500DFB490 /* vk_activity_ios8.png */; };
+		1CE5B32D19E816B500DFB490 /* vk_activity_ios8@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CE5B32B19E816B500DFB490 /* vk_activity_ios8@2x.png */; };
 		F3BACC4F18659103003158DA /* libVKSdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3EEFFCA1827F6B7000BB525 /* libVKSdk.a */; };
 		F3BACC5E1865EA30003158DA /* VKSdkResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F3BACC5D1865EA30003158DA /* VKSdkResources.bundle */; };
 		F3D38E74183CFEC300D05079 /* fat_awesome.png in Resources */ = {isa = PBXBuildFile; fileRef = F3D38E73183CFEC300D05079 /* fat_awesome.png */; };
@@ -56,6 +58,8 @@
 		1C7C32BC18C09332002BD584 /* example.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = example.jpg; sourceTree = "<group>"; };
 		1C7C32C218C0A873002BD584 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = ../../MBProgressHUD/MBProgressHUD.h; sourceTree = "<group>"; };
 		1C7C32C318C0A873002BD584 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = ../../MBProgressHUD/MBProgressHUD.m; sourceTree = "<group>"; };
+		1CE5B32A19E816B500DFB490 /* vk_activity_ios8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = vk_activity_ios8.png; sourceTree = "<group>"; };
+		1CE5B32B19E816B500DFB490 /* vk_activity_ios8@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vk_activity_ios8@2x.png"; sourceTree = "<group>"; };
 		F3BACC301865902D003158DA /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		F3BACC5D1865EA30003158DA /* VKSdkResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = VKSdkResources.bundle; path = ../VKSdkResources.bundle; sourceTree = "<group>"; };
 		F3D38E73183CFEC300D05079 /* fat_awesome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fat_awesome.png; sourceTree = "<group>"; };
@@ -129,6 +133,8 @@
 		1C7C32C618C0B577002BD584 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				1CE5B32A19E816B500DFB490 /* vk_activity_ios8.png */,
+				1CE5B32B19E816B500DFB490 /* vk_activity_ios8@2x.png */,
 				1C7C32B818C0907F002BD584 /* vk_activity.png */,
 				1C7C32B918C0907F002BD584 /* vk_activity@2x.png */,
 				1C7C32BC18C09332002BD584 /* example.jpg */,
@@ -258,8 +264,10 @@
 				F3BACC5E1865EA30003158DA /* VKSdkResources.bundle in Resources */,
 				F3DC2446183B811E00E3A93D /* Storyboard.storyboard in Resources */,
 				1C7C32BB18C0907F002BD584 /* vk_activity@2x.png in Resources */,
+				1CE5B32D19E816B500DFB490 /* vk_activity_ios8@2x.png in Resources */,
 				F3EEFF741827B1DD000BB525 /* InfoPlist.strings in Resources */,
 				F3EEFF7C1827B1DD000BB525 /* Images.xcassets in Resources */,
+				1CE5B32C19E816B500DFB490 /* vk_activity_ios8.png in Resources */,
 				F3D38E74183CFEC300D05079 /* fat_awesome.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

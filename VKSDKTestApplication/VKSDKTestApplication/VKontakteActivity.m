@@ -56,7 +56,7 @@ static NSString * kDefaultAppID= @"3974615";
 
 - (UIImage *)activityImage
 {
-    return [UIImage imageNamed:@"vk_activity"];
+    return [UIImage imageNamed: (iOS8 ? @"vk_activity_ios8" : @"vk_activity")];
 }
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
