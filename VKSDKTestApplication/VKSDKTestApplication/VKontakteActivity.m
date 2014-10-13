@@ -97,19 +97,24 @@ static NSString * kDefaultAppID= @"3974615";
 - (void)performActivity
 {
     [VKSdk initializeWithDelegate:self andAppId:self.appID];
-    [self.parent dismissViewControllerAnimated:YES completion:^(void)
-     {
-         if ([VKSdk wakeUpSession])
-         {
-             [self startComposeViewController];
-             
-         }
-         else
-         {
-             [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
-         }
-         
-     }];
+    
+    void (^simpleBlock)(void) = ^{
+        if ([VKSdk wakeUpSession])
+        {
+            [self startComposeViewController];
+            
+        }
+        else
+        {
+            [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
+        }
+    };
+    if (iOS8) {
+        simpleBlock();
+    }
+    else{
+        [self.parent dismissViewControllerAnimated:YES completion:simpleBlock];
+    }
 }
 
 #pragma mark - Upload
