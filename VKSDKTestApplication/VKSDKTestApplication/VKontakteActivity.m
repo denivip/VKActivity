@@ -7,8 +7,7 @@
 //
 
 #import "VKontakteActivity.h"
-#import <VKSdk/VKSdk.h>
-#import "MBProgressHUD.h"
+#import "VKSdk.h"
 #import "REComposeViewController.h"
 
 @interface VKontakteActivity () <VKSdkDelegate, REComposeViewControllerDelegate>
@@ -18,7 +17,6 @@
 @property (nonatomic, strong) NSURL *URL;
 
 @property (nonatomic, strong) UIViewController *parent;
-@property (nonatomic, strong) MBProgressHUD *HUD;
 
 @end
 
@@ -109,12 +107,12 @@ static NSString * kDefaultAppID= @"3974615";
             [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
         }
     };
-    if (iOS8) {
+//    if (iOS8) {
         simpleBlock();
-    }
-    else{
-        [self.parent dismissViewControllerAnimated:YES completion:simpleBlock];
-    }
+//    }
+//    else{
+//        [self.parent dismissViewControllerAnimated:YES completion:simpleBlock];
+//    }
 }
 
 #pragma mark - Upload
@@ -135,17 +133,17 @@ static NSString * kDefaultAppID= @"3974615";
 {
     NSString *userId = [VKSdk getAccessToken].userId;
     VKRequest *request = [VKApi uploadWallPhotoRequest:self.image parameters:[VKImageParameters jpegImageWithQuality:1.f] userId:[userId integerValue] groupId:0];
-	[request executeWithResultBlock: ^(VKResponse *response) {
-	    VKPhoto *photoInfo = [(VKPhotoArray*)response.parsedModel objectAtIndex:0];
-	    NSString *photoAttachment = [NSString stringWithFormat:@"photo%@_%@", photoInfo.owner_id, photoInfo.id];
+    [request executeWithResultBlock: ^(VKResponse *response) {
+        VKPhoto *photoInfo = [(VKPhotoArray*)response.parsedModel objectAtIndex:0];
+        NSString *photoAttachment = [NSString stringWithFormat:@"photo%@_%@", photoInfo.owner_id, photoInfo.id];
         [self postToWall:@{ VK_API_ATTACHMENTS : photoAttachment,
                             VK_API_FRIENDS_ONLY : @(0),
                             VK_API_OWNER_ID : userId,
                             VK_API_MESSAGE : [NSString stringWithFormat:@"%@ %@",self.string, [self.URL absoluteString]]}];
     } errorBlock: ^(NSError *error) {
-	    NSLog(@"Error: %@", error);
+        NSLog(@"Error: %@", error);
         [self activityDidFinish:NO];
-	}];
+    }];
 }
 
 -(void)uploadText{
@@ -172,8 +170,8 @@ static NSString * kDefaultAppID= @"3974615";
 
 - (void)vkSdkNeedCaptchaEnter:(VKError *)captchaError
 {
-	VKCaptchaViewController *vc = [VKCaptchaViewController captchaControllerWithError:captchaError];
-	[vc presentIn:self.parent];
+    VKCaptchaViewController *vc = [VKCaptchaViewController captchaControllerWithError:captchaError];
+    [vc presentIn:self.parent];
 }
 
 - (void)vkSdkTokenHasExpired:(VKAccessToken *)expiredToken
@@ -188,7 +186,7 @@ static NSString * kDefaultAppID= @"3974615";
 
 - (void)vkSdkShouldPresentViewController:(UIViewController *)controller
 {
-	[self.parent presentViewController:controller animated:YES completion:nil];
+    [self.parent presentViewController:controller animated:YES completion:nil];
 }
 
 - (void)vkSdkDidAcceptUserToken:(VKAccessToken *)token
@@ -197,13 +195,6 @@ static NSString * kDefaultAppID= @"3974615";
 }
 - (void)vkSdkUserDeniedAccess:(VKError *)authorizationError
 {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                        message:@"Access denied"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"Close"
-                                              otherButtonTitles:nil];
-    [alertView show];
-    
     [self activityDidFinish:NO];
 }
 
@@ -215,7 +206,7 @@ static NSString * kDefaultAppID= @"3974615";
     composeViewController.attachmentImage = self.image;
     composeViewController.text = self.string;
     [composeViewController setDelegate:self];
-    [composeViewController presentFromRootViewController];
+    [composeViewController presentFromViewController:self.parent];
 }
 
 - (void)composeViewController:(REComposeViewController *)composeViewController didFinishWithResult:(REComposeResult)result
