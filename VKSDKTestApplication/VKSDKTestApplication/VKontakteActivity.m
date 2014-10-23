@@ -107,12 +107,12 @@ static NSString * kDefaultAppID= @"3974615";
             [VKSdk authorize:@[VK_PER_WALL, VK_PER_PHOTOS] revokeAccess:NO forceOAuth:NO inApp:YES display:VK_DISPLAY_IOS];
         }
     };
-//    if (iOS8) {
+    if (!iOS8 && !isIpad) {
+        [self.parent dismissViewControllerAnimated:YES completion:simpleBlock];
+    }
+    else{
         simpleBlock();
-//    }
-//    else{
-//        [self.parent dismissViewControllerAnimated:YES completion:simpleBlock];
-//    }
+    }
 }
 
 #pragma mark - Upload
