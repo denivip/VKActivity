@@ -10,6 +10,10 @@
 #import "VKSdk.h"
 #import "REComposeViewController.h"
 
+// abandoning
+// Instead of this class
+// and vk-ios-sdk  https://github.com/denivip/vk-ios-sdk
+// using release vk-ios-sdk https://github.com/VKCOM/vk-ios-sdk.git
 @interface VKontakteActivity () <VKSdkDelegate, REComposeViewControllerDelegate>
 
 @property (nonatomic, strong) UIImage *image;
